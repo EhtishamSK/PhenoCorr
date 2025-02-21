@@ -22,7 +22,7 @@ write.csv(correlation_table0, file = "correlation_table0.csv", row.names = FALSE
 constant_vars <- names(data_corr)[apply(data_corr, 2, function(x) length(unique(x))) == 1]
 print(constant_vars)
 # Calculate correlation matrix, ignoring NAs
-correlation_matrix <- cor(data_corr, use = "pairwise.complete.obs")
+correlation_matrix <- cor(data_corr, method = "pearson", use = "pairwise.complete.obs")
 # Initialize an empty matrix for storing correlation coefficients with significance levels
 correlation_table <- matrix("", nrow = ncol(correlation_matrix), ncol = ncol(correlation_matrix))
 # Loop through each pair of variables
@@ -55,21 +55,99 @@ print(correlation_table)
 # Write the correlation table to a CSV file
 write.csv(correlation_table, file = "correlation_table.csv", row.names = FALSE)
 
-# Plot the qgraph
-corMat1 <-  cor(data_corr, method = "spearman", use="pairwise")
+
+# Calculate the correlation matrix for the data using Pearson's correlation method
+corMat1 <-  cor(data_corr, method = "pearson", use="pairwise")
+
+# Define groups for the traits to be used in the visualization
 groups <- list(Plant_architecture = c(1,2,3,4,5),
                Fruit_destemming = c(6,7,8,9),
                Fruit_morphology = c(10,11,12,13,14,15,16),
                Yeild_parameters = c(17,18,19,20))
 
-# Plot the qgraph with groups
+# Set the labels for the traits corresponding to the columns in the data
+trait_labels <- c("PHT", "PWDT", "HTFPB", "DTFN", "NBB", "DSFG", "DSFR", "DSRG", "DSRR",  
+                  "ARA", "CURH", "HMW", "MAXH", "MAXW", "PER", "WMH", "GRN", "RED", "TLY", "PODWT")
+
+# Save the plot as a PNG file with specific dimensions and resolution
+png("qgraph_correlation_plot1.png", width = 17, height = 8, units = "in", res = 600, bg = "white")
+
+# Load the qgraph package for plotting
 library(qgraph)
-qgraph(corMat1, graph = "cor", groups=groups, minimum=0.2,
+
+# Generate the correlation network plot with customized settings
+qgraph(corMat1, graph = "cor", groups=groups, minimum=0.23,  # Plot correlations with a minimum threshold of 0.23
+       borders = TRUE,  # Display borders around the nodes
+       shape="rectangle",  # Set node shape to rectangle
+       vsize=5,  # Set node size for main groups
+       vsize2=2,  # Set node size for secondary groups
+       labels = trait_labels,  # Explicitly set trait labels for nodes
+       edge.labels=TRUE,  # Display correlation values on the edges
+       edge.label.cex=0.5,  # Adjust font size for edge labels
+       label.cex=1,  # Adjust font size for node labels
+       edge.label.bg=FALSE,  # Disable background color for edge labels
+       edge.label.color="black",  # Set color for edge labels
+       edge.label.position=0.65,  # Position of the edge labels along the edges
+       legend.cex = 0.5,  # Adjust size of legend text
+       esize=7,  # Adjust size of the edges in the plot
+       posCol="DarkGreen",  # Set color for positive correlations
+       negCol="coral3",  # Set color for negative correlations
+       label.scale=FALSE,  # Do not scale node labels based on size
+       palette="rainbow")  # Use a rainbow color palette for the edges
+
+# Close the graphical device and save the plot
+dev.off()
+
+
+# plot only significant correlations 
+
+library(qgraph)
+library(psych)  # Load psych package for corr.test
+
+# Compute correlation matrix and p-values in one step
+corr_results <- corr.test(data_corr, method = "pearson", use = "pairwise.complete.obs")
+
+# Extract correlation matrix
+corMat1 <- corr_results$r  
+
+# Extract p-value matrix
+pMat1 <- corr_results$p  
+
+# Apply significance threshold (e.g., p < 0.05)
+corMat1[pMat1 >= 0.05] <- 0  # Set non-significant correlations to zero
+
+# Force symmetry to avoid numerical inconsistencies
+corMat1 <- (corMat1 + t(corMat1)) / 2
+
+
+# Define groups for visualization
+groups <- list(
+  Plant_architecture = c(1,2,3,4,5),
+  Fruit_destemming = c(6,7,8,9),
+  Fruit_morphology = c(10,11,12,13,14,15,16),
+  Yield_parameters = c(17,18,19,20)
+)
+
+trait_labels <- c("PHT", "PWDT", "HTFPB", "DTFN", "NBB", "DSFG", "DSFR", "DSRG", "DSRR",  
+                  "ARA", "CURH", "HMW", "MAXH", "MAXW", "PER", "WMH", "GRN", "RED", "TLY", "PODWT")
+
+# Plot the significant correlations
+png("qgraph_correlation_plot.png", width = 12, height = 8, units = "in", res = 600, bg = "white")
+
+qgraph(corMat1, graph = "cor", groups=groups, minimum=0.23,
        borders = TRUE,
-       shape="ellipse",vsize=6,vsize2=4,#vTrans=90,
-       edge.labels=TRUE,edge.label.cex=0.66,#label.font=18,
-       label.cex=1.6,
-       edge.label.bg=FALSE,edge.label.color="black", edge.label.position=0.65,legend.cex = 0.5,esize=7,
-       posCol="DarkGreen", negCol="coral3",label.scale=TRUE,
+       shape="rectangle", vsize=6, vsize2=4.5,
+       labels = trait_labels,  # Explicitly set labels
+       edge.labels=TRUE, edge.label.cex=1,  # Increase correlation label font size
+       label.cex=2, 
+       edge.label.bg=FALSE, edge.label.color="black", edge.label.position=0.65, 
+       legend.cex = 0.5, esize=7,
+       posCol="DarkGreen", negCol="coral3", label.scale=FALSE,
        palette="rainbow")
+
+dev.off()
+
+
+
+
 
