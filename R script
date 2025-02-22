@@ -70,33 +70,23 @@ trait_labels <- c("PHT", "PWDT", "HTFPB", "DTFN", "NBB", "DSFG", "DSFR", "DSRG",
                   "ARA", "CURH", "HMW", "MAXH", "MAXW", "PER", "WMH", "GRN", "RED", "TLY", "PODWT")
 
 # Save the plot as a PNG file with specific dimensions and resolution
-png("qgraph_correlation_plot1.png", width = 17, height = 8, units = "in", res = 600, bg = "white")
+png("qgraph_correlation_plot2.png", width = 12, height = 8, units = "in", res = 600, bg = "white")
 
-# Load the qgraph package for plotting
 library(qgraph)
+qgraph(corMat1, graph = "cor", groups=groups, minimum=0.23,
+       borders = TRUE,
+       shape="rectangle", vsize=6, vsize2=2,
+       labels = trait_labels,  # Explicitly set labels
+       edge.labels=TRUE, edge.label.cex=0.5,  # Increase correlation label font size
+       label.cex=1, 
+       edge.label.bg=FALSE, edge.label.color="black", edge.label.position=0.65, 
+       legend.cex = 0.5, esize=7,
+       posCol="seagreen", negCol="coral3", label.scale=FALSE,
+       palette="rainbow")
 
-# Generate the correlation network plot with customized settings
-qgraph(corMat1, graph = "cor", groups=groups, minimum=0.23,  # Plot correlations with a minimum threshold of 0.23
-       borders = TRUE,  # Display borders around the nodes
-       shape="rectangle",  # Set node shape to rectangle
-       vsize=5,  # Set node size for main groups
-       vsize2=2,  # Set node size for secondary groups
-       labels = trait_labels,  # Explicitly set trait labels for nodes
-       edge.labels=TRUE,  # Display correlation values on the edges
-       edge.label.cex=0.5,  # Adjust font size for edge labels
-       label.cex=1,  # Adjust font size for node labels
-       edge.label.bg=FALSE,  # Disable background color for edge labels
-       edge.label.color="black",  # Set color for edge labels
-       edge.label.position=0.65,  # Position of the edge labels along the edges
-       legend.cex = 0.5,  # Adjust size of legend text
-       esize=7,  # Adjust size of the edges in the plot
-       posCol="DarkGreen",  # Set color for positive correlations
-       negCol="coral3",  # Set color for negative correlations
-       label.scale=FALSE,  # Do not scale node labels based on size
-       palette="rainbow")  # Use a rainbow color palette for the edges
-
-# Close the graphical device and save the plot
 dev.off()
+
+
 
 
 # plot only significant correlations 
