@@ -1,1 +1,15 @@
-This R script performs a correlation analysis on a dataset of adjusted means, facilitating the exploration of relationships among various traits. The script begins by setting the working directory and loading the dataset from a CSV file, followed by the installation and loading of the metan and qgraph packages. It processes the data by excluding the first column (genotypes) and computes the correlation coefficients using the corr_coef function. A correlation matrix is generated, and significant correlations are identified and annotated with appropriate significance levels. The results are then saved to a CSV file for further analysis. Additionally, the script plots a correlation graph using the Spearman method, grouping traits into categories for clarity in visualization. This provides a comprehensive overview of the correlations among traits, aiding in understanding their interdependencies.
+# PhenoCorr - Phenotypic Correlation and Heat Network Maps
+
+- **Objective**: Perform correlation analysis among phenotypic traits.  
+- **Data**: Uses adjusted means dataset (`data.csv`).  
+- **Analysis**:  
+  - Computes Pearson’s correlation coefficients.  
+  - Tests significance of trait associations.  
+  - Creates formatted correlation tables with significance stars (*, **, ***).  
+- **Visualization**:  
+  - Network plots (`qgraph`) to display correlations.  
+  - Option to highlight only significant correlations.  
+  - Groups traits into categories (Plant Architecture, Fruit Destemming, Fruit Morphology, Yield).  
+- **Output**:  
+  - Correlation tables saved as CSV.  
+  - High-resolution PNG network plots of correlation structure.  
